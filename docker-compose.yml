@@ -1,13 +1,14 @@
-version: '3'
-
+version: '3.7'
 services:
-  cassandra1:
-    image: cassandra:latest
-    container_name: cassandra1
+  mongodb_container:
+    image: mongo:latest
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: rootpassword
     ports:
-      - "9042:9042"
-    networks:
-      - cassandra-network
+      - "27017:27017"
+    volumes:
+      - mongodb_data_container:/data/db
 
-networks:
-  cassandra-network:
+volumes:
+  mongodb_data_container:

@@ -1,7 +1,9 @@
 package com.reactive.programming.repository
 
 import com.reactive.programming.model.UserInput
-import org.springframework.data.cassandra.repository.CassandraRepository
+import org.springframework.data.mongodb.repository.ReactiveMongoRepository
+import org.springframework.stereotype.Repository
 
-interface UserRepository:CassandraRepository<UserInput,Int> {
+@Repository
+interface UserRepository : ReactiveMongoRepository<UserInput, Int> {
 }
