@@ -8,13 +8,14 @@ import com.reactive.programming.repository.UserRepository
 import org.slf4j.LoggerFactory
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
+import org.springframework.web.reactive.function.client.WebClient
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 import reactor.kotlin.core.publisher.switchIfEmpty
 
 @RestController
 @RequestMapping("/api/v1")
-class UserController(val userRepository: UserRepository) {
+class UserController(val userRepository: UserRepository, val userWebClient: WebClient) {
 
     private val logger =  LoggerFactory.getLogger(UserController::class.java)
     @GetMapping("/users")
@@ -38,6 +39,19 @@ class UserController(val userRepository: UserRepository) {
         val createdUser = userRepository.insert(userInput).map{
             it.toUserInputResponse()
         }.onErrorMap {  exc-> UserNotCreated("User could not be created: ${exc.message}!")  }
+        return ResponseEntity.ok(createdUser)
+    }
+
+    @PostMapping("/users/ext")
+    fun saveExternalUsers(): ResponseEntity<Flux<UserInputResponse>> {
+        val externalUsers = userWebClient.get()
+            .uri("/users")
+            .retrieve()
+            .bodyToFlux(UserInput::class.java)
+
+        val createdUser = userRepository.insert(externalUsers).map{
+            it.toUserInputResponse()
+        }.doOnError {  exc-> UserNotCreated("User could not be created: ${exc.message}!")  }
         return ResponseEntity.ok(createdUser)
     }
 

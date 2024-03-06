@@ -1,7 +1,7 @@
 package com.reactive.programming.model
 
 data class UserInputResponse (
-    var firstName:String,
-    var lastName:String,
-    var age:Int,
+    var name: String,
+    var username: String,
+    var email: String
 )
